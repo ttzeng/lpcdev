@@ -1,0 +1,29 @@
+History of updates to CMSIS_CORE_LPC8xx
+=======================================
+
+13 July 2016
+------------
+Updated LPC8xx.h and system_LPC8xx.c files, in the CMSIS_CORE_LPC8xx project only (this project) for the lpc812 Example Code Bundle.
+(These files are now different from the 18 July 2013 versions noted below.)
+1. Changed the defines in system_LPC8xx.c so that the SystemInit function configures the clocking for SystemCoreClock = 30 MHz (12 MHz IRC, clocking PLL to produce 60 MHz MainClk, and AHBCLKDIV = divide-by-2).
+2. In LPC8xx.h, changed register names in the UART and SPI structs to match the user manual (CTL and TXCTL, instead of CTRL and TXCTRL).
+3. Changed Reserved0[1] to Reserved0[45] in the MRT struct. 
+
+18 July 2013
+------------
+Updated with ARM Cortex-M0+ CMSIS files as supplied in ARM's
+CMSIS 3.20 March 2013 release.
+
+18 March 2013
+-------------
+Defines in system_LPC8xx.c changed so that clock setup is
+done based on IRC rather than XTAL, so as to function with
+LPC800-MAX board as well as LPCXpresso812. SystemCoreClock 
+thus now defaults to 12MHz.
+
+7 November 2012
+---------------
+CMSIS library project using ARM Cortex-M0+ CMSIS files as
+supplied in ARM's CMSIS 3.01 March 2012 release, together
+with device specific files.
+

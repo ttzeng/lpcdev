@@ -1,0 +1,6 @@
+[submodule "external/CMSIS"]
+	path = external/CMSIS
+	url = https://github.com/ARM-software/CMSIS.git
+[submodule "external/FreeRTOS"]
+	path = external/FreeRTOS
+	url = https://github.com/FreeRTOS/FreeRTOS.git
