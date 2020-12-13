@@ -151,6 +151,18 @@ localpath  = $(subst $(TOP)/,,$(1))
 quiet_cmd_cc_o_c = CC $(call localpath,$<)
       cmd_cc_o_c = $(CC) -c $(cflags-y) $(cflags-$(notdir $<)-y) $< -o $@
 
+%.o: %.asm
+	$(call cmd,cc_o_s)
+
+%.o: %.s
+	$(call cmd,cc_o_s)
+
+%.o: %.S
+	$(call cmd,cc_o_s)
+
+quiet_cmd_cc_o_s = AS $(call localpath,$<)
+      cmd_cc_o_s = $(CC) -c $(asflags-y) $(cflags-y) $(cflags-$(notdir $<)-y) $< -o $@
+
 outdir  ?= out/
 program ?= $(notdir $(shell pwd))
 crt     := $(addsuffix .o,$(basename $(startup-y)))
