@@ -74,6 +74,10 @@ define include-mkfile =
 include $(1)
 endef
 
+# To recursively find all files in a directory:
+#	$(call find,foo/,*.c)
+find = $(wildcard $1$2) $(foreach d,$(wildcard $1*),$(call find,$d/,$2))
+
 PHONY := default all clean lib
 
 default: all
