@@ -52,7 +52,7 @@
 	#define __BSS(x)   @ ".sram"
 #endif
 #else 
-#if defined(__CC_ARM) || defined(__ICCARM__)
+#if defined(__CC_ARM) || defined(__ICCARM__) || defined(__GNUC__)
 	#define __BSS(x)
 #endif
 #endif
