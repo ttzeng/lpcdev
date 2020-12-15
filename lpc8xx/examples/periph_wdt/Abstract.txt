@@ -1,0 +1,21 @@
+Purpose:
+Example code to configure WatchDog Timer (WDT) in various modes.
+MRT (multi-rate timer) and CLKOUT function via switch matrix are used as well.
+
+Running mode:
+* Compile, Flash the program and reset.
+* Default project target set to Blinky_Release (exectuing from flash)
+* Can the run project from RAM by setting project target to Blinky_Debug
+
+Note:
+Tested on LPC800 LPCXpresso Board
+LPC800 running at 24 MHz
+WatchDog Oscillator (WDOSC) is configured a clock source to WatchDog (WDT)
+
+
+Output:
+LEDs connected to port pins PIO0_7 is toggled when no WDT reset, and PI0_17 is toggled when WDT reset occurs.
+Multi-Rate Timer (MRT) is configured to provide a delay for toggling acitivity
+CLKOUT function is assigned via switch matrix to PIO0_12 to see WDT OSc frequency (~9.48 kHz)
+	
+
