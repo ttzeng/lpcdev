@@ -1,0 +1,5 @@
+This example uses the ACMP_I1 (COMP_VP) and ACMP_I2 (COMP_VM) inputs to trigger the comparator.
+VCOMP_I2 uses P0.1 on the LPCXpresso board as an input.  The other input is connected to a variable resistor.
+The red LED (LED2) on the LPCXpresso board will turn on or off depending whether the variable resistor voltage
+is higher or lower than P0.1.  Note that P0.1 is normally floating if using the LPCXpresso board by itself, so a
+voltage should be applied for an accurate commparison.
