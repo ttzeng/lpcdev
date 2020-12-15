@@ -1,0 +1,31 @@
+Purpose:
+Low Power Mode example which allows user to put the LPC800 in sleep, deep sleep, power-down, 
+and deep power-down modes. Mult-rate Timer (MRT) generates an interrupt to wake-up LPC800.
+
+Running mode:
+* Compile, Flash the program and reset.
+* Default project target set to PMU_Release (exectuing from flash)
+* Can the run project from RAM by setting project target to PMU_Debug
+
+Note:
+Tested on LPC800 LPCXpresso Board
+LPC800 running at 24 MHz when not in low power modes.
+
+In the pmutest.c file, to configure the low power mode, comment in and out respective functions:
+To use sleep mode, comment in PMU_Sleep( MCU_SLEEP, regVal)
+To use deep sleep mode, comment in PMU_Sleep( MCU_DEEP_SLEEP, regVal) 
+To use power-down mode, comment in PMU_Sleep( MCU_POWER_DOWN, regVal)
+To use deep power-down mode, sleep mode,set TEST_DEEPPOWERDOWN  to '1' in lpc8xx_pmu.h file
+
+Default set-up is using sleep mode (main clock = 24 MHz)
+
+Hit reset after programming.
+Provide a falling to rise edge pulse on PIO0_1 to run the code
+
+To enter deep power-down mode, make sure PIO0_4 pin is externally pulled high.
+Once deep power-down mode is entered, pull PIO0_4 externally low to wake up from the mode.
+Also, internal wake-up timer can be enabled in the PMU_INIT function (lpc8xx_pmu.c) as well.
+
+Output:
+Multi-rate Timer generates an interrupt to wake-up device after sleep or deep sleep or power-down is entered.
+On wake-up from low power modes, PIO0_7 (Red LED) toggles
