@@ -56,6 +56,9 @@ extern "C" {
 #if defined (__USE_CMSIS) || defined (__USE_LPCOPEN)
 // Declaration of external SystemInit function
 extern void SystemInit(void);
+#if defined(CLOCK_IRC_ONLY)
+extern void IRC_Only_SystemInit(void);
+#endif
 #endif
 
 //*****************************************************************************
@@ -262,7 +265,11 @@ ResetISR(void) {
         bss_init(ExeAddr, SectionLen);
     }
 #if defined (__USE_CMSIS) || defined (__USE_LPCOPEN)
+#if defined(CLOCK_IRC_ONLY)
+    IRC_Only_SystemInit();
+#else
     SystemInit();
+#endif
 #endif
 
 #if defined (__cplusplus)
