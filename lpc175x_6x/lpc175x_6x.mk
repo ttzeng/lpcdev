@@ -6,6 +6,7 @@ cflags-y   += -mcpu=cortex-m3 -mthumb \
 asflags-y  += -x assembler-with-cpp
 startup-y  := $(if $(startup-y),$(startup-y),$d/startup/cr_startup_lpc175x_6x.c)
 startup-y  += $(wildcard $d/$(CONFIG_FIRMWARE)/startup/*.c)
+includes-y += $(TOP)/external/Include
 ldscript-y := $d/ldscripts/flash.ld
 
 # Code Read Protection support

@@ -8,6 +8,7 @@ cflags-y   += -mcpu=cortex-m0 -mthumb \
               -fmessage-length=0 -fno-builtin -ffunction-sections -fdata-sections
 startup-y  := $d/startup/cr_startup_lpc8xx.c
 startup-y  += $(wildcard $d/$(CONFIG_FIRMWARE)/startup/*.c)
+includes-y += $(TOP)/external/Include
 
 # Code Read Protection support
 startup-$(CONFIG_ENABLE_CRP) += $d/startup/crp.c

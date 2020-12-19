@@ -23,7 +23,8 @@ src-$(module)-y := $(mcusdk-device)/system_LPC812.c \
                    $(wildcard $(mcusdk-drivers)/*.c) \
                    $(call find,$(mcusdk-components)/,*.c) \
                    $(call find,$(mcusdk-utils)/,*.c)
-includes-y      += $(mcusdk-cmsis)/Include \
+includes-y      += $(TOP)/external/Include \
+                   $(mcusdk-cmsis)/Include \
                    $(mcusdk-cmsis)/Driver/Include \
                    $(mcusdk-device) \
                    $(mcusdk-drivers) \
