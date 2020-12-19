@@ -187,7 +187,7 @@ $(outdir)lib$(1).a: $(addsuffix .o,$(basename $(src-$(1)-y)))
 	$$(call cmd,mklib)
 endef
 
-$(foreach s,$(libs-y),$(eval $(call add-lib-rule,$s)))
+$(foreach s,$(sort $(libs-y)),$(eval $(call add-lib-rule,$s)))
 
 obj-a  := $(addsuffix .o,$(basename $(foreach s,$(libs-y),$(src-$s-y))))
 lflags := $(foreach s,$(libs-y),-l$s) $(lflags)
