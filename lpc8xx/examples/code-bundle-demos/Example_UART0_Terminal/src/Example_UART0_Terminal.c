@@ -12,9 +12,7 @@
 #include "LPC8xx.h"
 #endif
 
-#ifdef __CODE_RED
 #include <cr_section_macros.h>
-#endif
 
 #include <stdio.h>
 

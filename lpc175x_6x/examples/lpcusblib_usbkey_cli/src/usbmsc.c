@@ -5,9 +5,7 @@
 #include "board.h"
 #endif
 #endif
-#ifdef __CODE_RED
 #include <cr_section_macros.h>
-#endif
 #include "FreeRTOS.h"
 #include "task.h"
 #include "console.h"

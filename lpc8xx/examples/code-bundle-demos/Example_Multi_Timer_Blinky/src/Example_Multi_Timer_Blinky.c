@@ -12,9 +12,7 @@
 #include "LPC8xx.h"
 #endif
 
-#ifdef __CODE_RED
 #include <cr_section_macros.h>
-#endif
 
 #include "core_cm0plus.h"
 #include "Example_Multi_Timer_Blinky.h"

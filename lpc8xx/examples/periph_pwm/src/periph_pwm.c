@@ -5,9 +5,7 @@
 #include "lpc8xx_mrt.h"
 #endif
 
-#ifdef __CODE_RED
 #include <cr_section_macros.h>
-#endif
 
 #define CLOCK_SYSOSC_30MHZ
 

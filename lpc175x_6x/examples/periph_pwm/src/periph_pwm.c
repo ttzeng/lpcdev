@@ -12,9 +12,7 @@
 #endif
 #endif
 
-#ifdef __CODE_RED
 #include <cr_section_macros.h>
-#endif
 
 int main(void) {
 

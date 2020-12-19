@@ -31,7 +31,6 @@
 #include "LPC8xx.h"
 #endif
 
-#ifdef __CODE_RED
 #include <cr_section_macros.h>
 #include <NXP/crp.h>
 
@@ -39,7 +38,6 @@
 // by the linker when "Enable Code Read Protect" selected.
 // See crp.h header for more information
 __CRP const unsigned int CRP_WORD = CRP_NO_CRP ;
-#endif
 
 #include "swm.h"
 #include "sct_fsm.h"
