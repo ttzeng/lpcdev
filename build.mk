@@ -76,7 +76,7 @@ endef
 
 # To recursively find all files in a directory:
 #	$(call find,foo/,*.c)
-find = $(wildcard $1$2) $(foreach d,$(wildcard $1*),$(call find,$d/,$2))
+find = $(strip $(wildcard $1$2) $(foreach d,$(wildcard $1*),$(call find,$d/,$2)))
 
 PHONY := default all clean lib
 
@@ -187,7 +187,7 @@ $(outdir)lib$(1).a: $(addsuffix .o,$(basename $(src-$(1)-y)))
 	$$(call cmd,mklib)
 endef
 
-$(foreach s,$(sort $(libs-y)),$(eval $(call add-lib-rule,$s)))
+$(foreach s,$(strip $(libs-y)),$(eval $(call add-lib-rule,$s)))
 
 obj-a  := $(addsuffix .o,$(basename $(foreach s,$(libs-y),$(src-$s-y))))
 lflags := $(foreach s,$(libs-y),-l$s) $(lflags)
