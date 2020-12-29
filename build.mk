@@ -78,9 +78,15 @@ endef
 #	$(call find,foo/,*.c)
 find = $(strip $(wildcard $1$2) $(foreach d,$(wildcard $1*),$(call find,$d/,$2)))
 
-PHONY := default all clean lib
+PHONY := default all clean lib menuconfig guiconfig
 
 default: all
+
+# menuconfig/guiconfig are installed along with Kconfiglib, which is a Kconfig
+# implementation in Python 2/3.
+#	https://github.com/ulfalizer/Kconfiglib
+menuconfig guiconfig:
+	$(Q)$@ $(TOP)/Kconfig
 
 HOSTARCH := $(shell uname -m | sed -e s/i.86/x86/ -e s/x86_64/x86/ \
                                    -e s/sun4u/sparc64/ \
@@ -90,8 +96,12 @@ HOSTARCH := $(shell uname -m | sed -e s/i.86/x86/ -e s/x86_64/x86/ \
                                    -e s/sh[234].*/sh/ -e s/aarch64.*/arm64/ \
                                    -e s/riscv.*/riscv/)
 
--include $(TOP)/.config
+-include .config
+# Strip surrounding quotes of CONFIG_* variables
+$(foreach s,$(sort $(foreach s,$(.VARIABLES),$(if $(s:CONFIG_%=),,$s))),\
+                               $(eval $s:=$(patsubst "%",%,$($s))))
 -include $(TOP)/$(CONFIG_CHIP)/$(CONFIG_CHIP).mk
+-include $(TOP)/external/extmod.mk
 
 $(foreach s,$(extmod-y) $(KBUILD_EXTMOD),$(eval $(call include-mkfile,$(TOP)/external/$s.mk)))
 
@@ -190,7 +200,7 @@ endef
 $(foreach s,$(strip $(libs-y)),$(eval $(call add-lib-rule,$s)))
 
 obj-a  := $(addsuffix .o,$(basename $(foreach s,$(libs-y),$(src-$s-y))))
-lflags := $(foreach s,$(libs-y),-l$s) $(lflags)
+lflags := $(foreach s,$(libs-y),-l$s) -lgcc $(lflags)
 
 quiet_cmd_mklib = AR $(call localpath,$@)
       cmd_mklib = $(call mkdir,$@); $(AR) -rcs $@ $^

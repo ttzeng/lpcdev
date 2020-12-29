@@ -1,0 +1,141 @@
+config CHIP
+    string "Target chip"
+
+config FIRMWARE
+    string "Firmware type"
+
+config BOARD
+    string "Target board"
+    depends on (FIRMWARE = "lpcopen")
+
+if FIRMWARE != "MCUXpresso-SDK"
+config ENABLE_CRP
+    bool "Code Read Protection support"
+
+config ENABLE_MTB
+    bool "Micro Trace Buffer support"
+endif
+
+if FIRMWARE = "MCUXpresso-SDK"
+config MCUXPRESSOSDK_DEVICE
+    string "Device type of the MCUXpresso SDK"
+
+config MCUXPRESSOSDK_CPU_FEATURES
+    string "CPU features of the MCUXpresso SDK"
+endif
+
+menu "Device drivers"
+    config CMSIS_CODE_BUNDLE
+        bool "Use CMSIS drivers in Code Bundle"
+        depends on (CHIP = "lpc8xx" && FIRMWARE = "cmsis")
+
+    if CHIP = "lpc175x_6x"
+        config LPCOPEN_USBD
+            bool "Add prebuilt USB device stack libraries for LPC17xx/LPC40xx"
+
+        config HAS_LPCUSBLIB
+            bool "Add LPCUSBLib support"
+            help
+                LPCUSBlib is a full featured, open-source USB library designed to run on
+                all USB capable LPC microcontrollers from NXP.
+    endif
+endmenu
+
+menu "Build with external modules"
+    config EXT_UTILS
+        bool
+
+    menuconfig HAS_PRINTF
+        bool "Embedded printf() support"
+        imply EXT_UTILS
+        help
+            Link against a tiny but fully loaded printf, sprintf and (v)snprintf
+            implementation designed for embedded systems, instead of linking against
+            libc which printf() may not be available due to memory issues.
+
+    if HAS_PRINTF
+        config PRINTF_OUTPUT_HOOK
+            string "Platform specific low level output function"
+
+        config PRINTF_DROP_FLOAT
+            bool "Turn off floating point support"
+
+        config PRINTF_DROP_EXPONENTIAL
+            bool "Turn off exponential support"
+
+        config PRINTF_DROP_LONG_LONG
+            bool "Turn off 'long long' support"
+    endif
+
+    menuconfig EXT_FATFS
+        bool "Embedded FAT file system support"
+        help
+            FatFs is a generic FAT file system module for small embedded systems.
+
+    choice HAS_RTOS
+        prompt "Real-time Operating System (RTOS) support"
+        optional
+
+        menuconfig FREERTOS
+            bool "FreeRTOS support"
+            help
+                FreeRTOS is a real-time operating system (RTOS) for microcontrollers
+                and small microprocessors.
+
+        menuconfig CMSIS_RTOS
+            bool "CMSIS-RTOS RTX support"
+            help
+                CMSIS-RTOS RTX is a reference implementation of CMSIS-RTOS API which
+                provides a generic RTOS interfaces for Arm® Cortex® processor-based
+                devices.
+
+        menuconfig CMSIS_FREERTOS
+            bool "CMSIS-FreeRTOS support"
+            help
+                CMSIS-FreeRTOS enables CMSIS RTOS v2 API using FreeRTOS under the hood.
+
+        menuconfig UCOSIII
+            bool "uC/OS-III support"
+            depends on (CHIP = "lpc175x_6x")
+            help
+                µC/OS-III is a highly portable, scalable, preemptive, real-time,
+                deterministic, multitasking kernel for microprocessors, microcontrollers
+                and DSPs.
+    endchoice
+
+    config CMSIS_RTOS_REV
+        int "Revision of CMSIS-RTOS API"
+        depends on CMSIS_RTOS
+        default 2
+        range 1 2
+
+    config CMSIS_ARCH
+        string "Cortex type"
+        depends on CMSIS_RTOS || CMSIS_FREERTOS
+
+    config CMSIS_RTOS_TICK
+        string "CMSIS OS tick source"
+        depends on CMSIS_RTOS && CMSIS_RTOS_REV >= 2
+
+    config FREERTOS_PORT
+        string "Type of portable code"
+        depends on FREERTOS
+
+    config FREERTOS_MEMMANG
+        int "Sample memory allocation implementation"
+        depends on FREERTOS || CMSIS_FREERTOS
+        range 1 5
+        help
+            heap_1 – the very simplest, does not permit memory to be freed.
+            heap_2 – permits memory to be freed, but does not coalescence adjacent free blocks.
+            heap_3 – simply wraps the standard malloc() and free() for thread safety.
+            heap_4 – coalescences adjacent free blocks to avoid fragmentation. Includes absolute address placement option.
+            heap_5 – as per heap_4, with the ability to span the heap across multiple non-adjacent memory areas.
+
+    config FREERTOS_PLUS_CLI
+        bool "FreeRTOS+CLI support"
+        depends on FREERTOS || CMSIS_FREERTOS
+        help
+            FreeRTOS+CLI (Command Line Interface) provides a simple, small, extensible and
+            RAM efficient method for FreeRTOS applications to process command line inputs.
+endmenu

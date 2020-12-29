@@ -1,6 +1,6 @@
 d      := $(where-am-i)
 module := $(who-am-i)
-libs-y := $(module) $(libs-y)
+libs-y := $(libs-y) $(module)
 
 # (https://github.com/mpaland/printf.git) library is a tiny but fully loaded
 # printf, sprintf and (v)snprintf implementation designed for embedded systems.
