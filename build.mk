@@ -78,7 +78,7 @@ endef
 #	$(call find,foo/,*.c)
 find = $(strip $(wildcard $1$2) $(foreach d,$(wildcard $1*),$(call find,$d/,$2)))
 
-PHONY := default all clean lib menuconfig guiconfig
+PHONY := default all clean lib init menuconfig guiconfig
 
 default: all
 
@@ -98,8 +98,7 @@ HOSTARCH := $(shell uname -m | sed -e s/i.86/x86/ -e s/x86_64/x86/ \
 
 -include .config
 # Strip surrounding quotes of CONFIG_* variables
-$(foreach s,$(sort $(foreach s,$(.VARIABLES),$(if $(s:CONFIG_%=),,$s))),\
-                               $(eval $s:=$(patsubst "%",%,$($s))))
+$(foreach s,$(filter CONFIG_%,$(.VARIABLES)),$(eval $s:=$(patsubst "%",%,$($s))))
 -include $(TOP)/$(CONFIG_CHIP)/$(CONFIG_CHIP).mk
 -include $(TOP)/external/extmod.mk
 
@@ -156,33 +155,35 @@ cflags-y += -O$(KBUILD_OPTIMIZATION)
 mkdir      = mkdir -p $(abspath $(dir $(1)))
 localpath  = $(subst $(TOP)/,,$(1))
 
-%.o: %.c
+outdir  ?= out/
+program ?= $(notdir $(shell pwd))
+crt     := $(addsuffix .o,$(basename $(subst $(TOP)/,$(outdir),$(abspath $(startup-y)))))
+obj-c   := $(addsuffix .o,$(basename $(subst $(TOP)/,$(outdir),$(abspath $(src-y)))))
+lflags  := -lgcc $(lflags)
+objtree := $(dir $(crt) $(obj-c))
+
+$(outdir)%.o:: $(TOP)/%.c
 	$(call cmd,cc_o_c)
 
-%.o: %.cpp
+$(outdir)%.o:: $(TOP)/%.cpp
 	$(call cmd,cc_o_c)
 
 quiet_cmd_cc_o_c = CC $(call localpath,$<)
       cmd_cc_o_c = $(CC) -c $(cflags-y) $(cflags-$(notdir $<)-y) $< -o $@
 
-%.o: %.asm
+$(outdir)%.o:: $(TOP)/%.asm
 	$(call cmd,cc_o_s)
 
-%.o: %.s
+$(outdir)%.o:: $(TOP)/%.s
 	$(call cmd,cc_o_s)
 
-%.o: %.S
+$(outdir)%.o:: $(TOP)/%.S
 	$(call cmd,cc_o_s)
 
 quiet_cmd_cc_o_s = AS $(call localpath,$<)
       cmd_cc_o_s = $(CC) -c $(asflags-y) $(cflags-y) $(cflags-$(notdir $<)-y) $< -o $@
 
-outdir  ?= out/
-program ?= $(notdir $(shell pwd))
-crt     := $(addsuffix .o,$(basename $(startup-y)))
-obj-c   := $(addsuffix .o,$(basename $(src-y)))
-
-all: $(outdir)$(program)
+all: init $(outdir)$(program)
 
 $(outdir)$(program): lib $(crt) $(obj-c) $(outdir)$(program).ld
 	$(call cmd,gen_elf)
@@ -193,21 +194,24 @@ ifneq ($(libs-y),)
 lib: $(foreach s,$(libs-y),$(outdir)lib$s.a)
 
 define add-lib-rule =
-$(outdir)lib$(1).a: $(addsuffix .o,$(basename $(src-$(1)-y)))
+obj-$(1) := $(addsuffix .o,$(basename $(subst $(TOP)/,$(outdir),$(src-$(1)-y))))
+objtree  += $$(dir $$(obj-$(1)))
+$(outdir)lib$(1).a: $$(obj-$(1))
 	$$(call cmd,mklib)
 endef
 
 $(foreach s,$(strip $(libs-y)),$(eval $(call add-lib-rule,$s)))
 
-obj-a  := $(addsuffix .o,$(basename $(foreach s,$(libs-y),$(src-$s-y))))
-lflags := $(foreach s,$(libs-y),-l$s) -lgcc $(lflags)
+lflags := $(foreach s,$(libs-y),-l$s) $(lflags)
 
 quiet_cmd_mklib = AR $(call localpath,$@)
-      cmd_mklib = $(call mkdir,$@); $(AR) -rcs $@ $^
+      cmd_mklib = $(AR) -rcs $@ $^
 endif
 
+init:
+	$(Q)$(call mkdir,$(sort $(objtree)))
+
 $(outdir)$(program).ld: $(ldscript-y)
-	$(Q)$(call mkdir,$@)
 	$(Q)cp $^ $@
 
 quiet_cmd_gen_elf = LD $(call localpath,$@)
@@ -226,6 +230,6 @@ clean:
 	$(call cmd,cleanup)
 
 quiet_cmd_cleanup = CLEANUP
-      cmd_cleanup = rm -rf $(crt) $(obj-c) $(obj-a) $(outdir)
+      cmd_cleanup = rm -rf $(outdir)
 
 .PHONY: $(PHONY)
